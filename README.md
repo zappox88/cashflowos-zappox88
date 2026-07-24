@@ -1,4 +1,4 @@
-# CashFlowOS AI Agents — your Money Robot 🤖💰
+# CashFlowOS AI Agents — your Money Robot 🤖💰 
 
 > **You're not learning AI. You're hiring a robot employee.**
 > It watches your business river, files your paperwork, and asks before it touches money.
