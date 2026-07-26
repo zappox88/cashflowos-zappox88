@@ -1,8 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 
-// üì£ The Content agent ‚Äî a DRAFT-ONLY AI-video post generator.
+// \ud83d\udce3 The Content agent \u2014 a DRAFT-ONLY AI-video post generator.
 // Turns ONE idea into a platform-ready post package (generation prompt, caption,
-// hashtags, schedule). It NEVER posts anywhere and never touches your records ‚Äî
+// hashtags, schedule). It NEVER posts anywhere and never touches your records \u2014
 // it only hands you copy-paste-ready text. Mirrors the /video-post skill.
 
 // Trigger detection is deliberately NARROW so it doesn't steal ordinary
@@ -22,22 +22,22 @@ export function extractBrief(text: string): string {
 
 const SYSTEM =
   `You are the Content agent inside a business owner's Telegram assistant. You turn ONE ` +
-  `idea into a platform-ready AI-video post PACKAGE they can copy-paste. You DRAFT only ‚Äî ` +
+  `idea into a platform-ready AI-video post PACKAGE they can copy-paste. You DRAFT only \u2014 ` +
   `you never post anything and never claim to have posted.\n` +
   `From the brief, infer the idea, platform(s) and goal; if unstated, default to Instagram Reels / grow followers.\n` +
   `Produce, per platform, in this order:\n` +
-  `1) üé• an AI-video generation prompt (shot-by-shot for Sora/Runway/Veo: style, pacing, on-screen text, a 3-second hook),\n` +
-  `2) ‚úçÔ∏è a caption tailored to that platform with a clear call-to-action,\n` +
-  `3) üè∑Ô∏è hashtags (broad + niche mix),\n` +
-  `4) ‚è∞ a suggested posting time.\n` +
-  `RULES: the hook's first line is ‚â§ 8 words; never invent fake stats, testimonials or claims; keep it skimmable; ` +
-  `use Telegram HTML only (<b>,<i>,<code>) ‚Äî never Markdown asterisks; end by reminding them to review and that you won't post for them.`
+  `1) \ud83c\udfa5 an AI-video generation prompt (shot-by-shot for Sora/Runway/Veo: style, pacing, on-screen text, a 3-second hook),\n` +
+  `2) \u270d\ufe0f a caption tailored to that platform with a clear call-to-action,\n` +
+  `3) \ud83c\udff7\ufe0f hashtags (broad + niche mix),\n` +
+  `4) \u23f0 a suggested posting time.\n` +
+  `RULES: the hook's first line is \u2264 8 words; never invent fake stats, testimonials or claims; keep it skimmable; ` +
+  `use Telegram HTML only (<b>,<i>,<code>) \u2014 never Markdown asterisks; end by reminding them to review and that you won't post for them.`
 
 export async function draftVideoPost(brief: string, apiKey: string): Promise<string> {
   if (!brief) {
     return (
-      `üì£ <b>Content agent</b> ‚Äî give me three things: the <b>idea</b>, the <b>platform(s)</b>, and the <b>goal</b>.\n` +
-      `Example: <code>/content how to clone yourself in 10 min ¬∑ Instagram ¬∑ grow followers</code>`
+      `\ud83d\udce3 <b>Content agent</b> \u2014 give me three things: the <b>idea</b>, the <b>platform(s)</b>, and the <b>goal</b>.\n` +
+      `Example: <code>/content how to clone yourself in 10 min \u00b7 Instagram \u00b7 grow followers</code>`
     )
   }
   try {
@@ -53,9 +53,9 @@ export async function draftVideoPost(brief: string, apiKey: string): Promise<str
       .map(c => c.text)
       .join('\n')
       .trim()
-    return out || 'I couldn\'t draft that ‚Äî try rephrasing your idea.'
+    return out || 'I couldn\'t draft that \u2014 try rephrasing your idea.'
   } catch (e) {
     console.error('[CFO] content agent error:', e)
-    return '‚ö†Ô∏è I couldn\'t draft that right now ‚Äî check your ANTHROPIC_API_KEY has credit, then try again.'
+    return '\u26a0\ufe0f I couldn\'t draft that right now \u2014 check your ANTHROPIC_API_KEY has credit, then try again.'
   }
 }
