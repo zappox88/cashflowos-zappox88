@@ -17,6 +17,7 @@ import { BOT_TOOLS, runBotTool } from '@/lib/bot-tools'
 import { BOT_ACTION_TOOLS, ACTION_TOOL_NAMES, runBotAction } from '@/lib/bot-actions'
 import { logRun } from '@/lib/runs'
 import { isContentRequest, extractBrief, draftVideoPost } from '@/lib/content'
+import { SCHEDULED } from '@/agents/registry'
 
 // \ud83d\udd12 Don't edit \u2014 this keeps your robot safe.
 // The Telegram brain + hands. This ONE webhook does three jobs:
@@ -245,6 +246,27 @@ async function handleMessage(msg: any): Promise<Response> {
   // Plain question \u2192 the tool-using loop (the course's foundational agent loop):
   // Claude picks a read tool, the SERVER runs it against your records, the grounded
   // result comes back, Claude answers. Degrade calmly with no API key.
+  // On-demand agent command: /<key> runs a scheduled agent right now (same logic
+  // as the daily cron). Registering in SCHEDULED is all it takes to enable it.
+  const cmd = text.match(/^\/([a-z][a-z0-9-]*)$/i)
+  if (cmd) {
+    const agent = SCHEDULED.find((a) => a.key === cmd[1].toLowerCase())
+    if (agent) {
+      await sendMessage(chatId, `\ud83e\udd16 Running ${agent.label} now\u2026`)
+      const rows = await getRecords()
+      const today = todayISO()
+      let drafts: { idempotencyKey: string; payload: any; text: string }[] = []
+      try { drafts = agent.check(rows, today) } catch (e) { console.error('[CFO] on-demand check threw:', e) }
+      let created = 0
+      for (const d of drafts) {
+        const row = await proposeAndNotify({ agentKey: agent.key, idempotencyKey: d.idempotencyKey, payload: d.payload, chatId, text: d.text })
+        if (row) created++
+      }
+      if (created === 0) await sendMessage(chatId, `\u2705 ${agent.label} checked \u2014 nothing needs you right now (or already handled today).`)
+      return Response.json({ ok: true })
+    }
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
   if (!apiKey) {
     await sendMessage(chatId, '\ud83e\udd16 I can\'t think yet \u2014 add your <b>ANTHROPIC_API_KEY</b> in the N step, then redeploy.')
